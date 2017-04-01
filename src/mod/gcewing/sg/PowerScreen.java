@@ -46,10 +46,10 @@ public class PowerScreen extends BaseGuiContainer {
         int cx = xSize / 2;
         //textColor = 0x004c66;
         drawCenteredString(te.getScreenTitle(), cx, 8);
-        drawRightAlignedString(te.getUnitName(), 72, 28);
-        drawRightAlignedString(String.format("%.0f", te.energyBuffer), 121, 28);
-        drawRightAlignedString("Max", 72, 42);
-        drawRightAlignedString(String.format("%.0f", te.energyMax), 121, 42);
+        drawRightAlignedString(te.getUnitName(), 68, 28);
+        drawRightAlignedString(String.format("%,.0f", te.energyBuffer), 123, 28);
+        drawRightAlignedString("Max", 68, 42);
+        drawRightAlignedString(String.format("%,.0f", te.energyMax), 123, 42);
         drawPowerGauge();
     }
     

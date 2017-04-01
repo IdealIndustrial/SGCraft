@@ -23,10 +23,16 @@ public class IC2PowerTE extends PowerTE implements IEnergySink {
     boolean debugLoad = false;
     boolean debugInput = false;
 
-    final static int maxSafeInput = 2048;
-    final static int maxEnergyBuffer = 1000000;
-    final static double euPerSGEnergyUnit = 20.0;
+    static int maxSafeInput = SGBaseTE.ic2Input;
+    static int maxEnergyBuffer = SGBaseTE.ic2Buffer;
+    static double euPerSGEnergyUnit = SGBaseTE.ic2Ratio;
 
+    public static void SetIC2Params(int input, int buffer, double ratio) {
+        maxSafeInput = input;
+        maxEnergyBuffer = buffer;
+        euPerSGEnergyUnit = ratio;
+    }
+    
     boolean loaded = false;
     
     public IC2PowerTE() {
@@ -96,11 +102,13 @@ public class IC2PowerTE extends PowerTE implements IEnergySink {
     @Override
     public double injectEnergy(ForgeDirection directionFrom, double amount, double voltage) {
         energyBuffer += amount;
+        double diff = energyBuffer - maxEnergyBuffer;
+        energyBuffer = min(energyBuffer, maxEnergyBuffer);
         markDirty();
         markBlockForUpdate();
         if(debugInput)
             System.out.printf("SGCraft: IC2PowerTE: Injected %s EU giving %s\n", amount, energyBuffer);
-        return 0;
+        return max(diff, 0);
     }
     
 //	@Override

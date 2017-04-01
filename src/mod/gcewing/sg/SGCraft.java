@@ -255,6 +255,8 @@ public class SGCraft extends BaseMod<SGCraftClient> {
 
     @Override
     protected void registerRandomItems() {
+        if (!config.getBoolean("options", "enableChestLoot", true))
+            return;
         String[] categories = {ChestGenHooks.MINESHAFT_CORRIDOR,
             ChestGenHooks.PYRAMID_DESERT_CHEST, ChestGenHooks.PYRAMID_JUNGLE_CHEST,
             ChestGenHooks.STRONGHOLD_LIBRARY, ChestGenHooks.VILLAGE_BLACKSMITH};

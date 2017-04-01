@@ -55,6 +55,10 @@ public class SGBaseTE extends BaseTileInventory {
     public final static DamageSource irisDamageSource = new IrisDamageSource();
     public final static float irisDamageAmount = 1000000;
     
+    public static int ic2Input = 524288;
+    public static int ic2Buffer = 1000000;
+    public static double ic2Ratio = 20.0;
+    
     final static int[] diallingTime = {40, 28}; // ticks
     final static int[] interDiallingTime = {10, 11}; // ticks
     final static String[] diallingSound = {"gcewing_sg:sg_dial7", "gcewing_sg:sg_dial9"};
@@ -144,6 +148,12 @@ public class SGBaseTE extends BaseTileInventory {
         energyUsePerTick = energyPerFuelItem / (minutesOpenPerFuelItem * 60 * 20);
         distanceFactorMultiplier = cfg.getDouble("stargate", "distanceFactorMultiplier", distanceFactorMultiplier);
         interDimensionMultiplier = cfg.getDouble("stargate", "interDimensionMultiplier", interDimensionMultiplier);
+        //IC2 cfg intergation
+        ic2Input = cfg.getInteger("ic2", "input", ic2Input);
+        ic2Buffer = cfg.getInteger("ic2", "buffer", ic2Buffer);
+        ic2Ratio = cfg.getDouble("ic2", "ratio", ic2Ratio);
+        gcewing.sg.ic2.IC2PowerTE.SetIC2Params(ic2Input, ic2Buffer, ic2Ratio);
+        
         System.out.printf("SGBaseTE: energyPerFuelItem = %s\n", energyPerFuelItem);
         System.out.printf("SGBaseTE: energyToOpen = %s\n", energyToOpen);
         System.out.printf("SGBaseTE: energyUsePerTick = %s\n", energyUsePerTick);
@@ -573,6 +583,8 @@ public class SGBaseTE extends BaseTileInventory {
     }
     
     public static double distanceFactorForCoordDifference(TileEntity te1, TileEntity te2) {
+        if (te1.getWorldObj() != te2.getWorldObj())
+            return interDimensionMultiplier;
         double dx = te1.xCoord - te2.xCoord;
         double dz = te1.zCoord - te2.zCoord;
         double d = Math.sqrt(dx * dx + dz * dz);
@@ -582,9 +594,7 @@ public class SGBaseTE extends BaseTileInventory {
         double lm = Math.log(0.05 * 16 * SGAddressing.coordRange);
         double lr = ld / lm;
         double f = 1 + 14 * distanceFactorMultiplier * lr * lr;
-        if (te1.getWorldObj() != te2.getWorldObj())
-            f *= interDimensionMultiplier;
-        return f;
+        return f > interDimensionMultiplier ? interDimensionMultiplier : f;
     }
     
     public void playSGSoundEffect(String name, float volume, float pitch) {
